@@ -8,16 +8,30 @@ ecran_largeur = 1000 ; ecran_hauteur = 600
 screen = pygame.display.set_mode((ecran_largeur, ecran_hauteur))
 clock = pygame.time.Clock() ; FPS = 60
 
+def image(nom):
+    img = pygame.image.load("images//epreuves//plateau//" + nom + ".png").convert_alpha()
+    return img
+
 pygame.display.set_caption("Soufflecendre")
 
+cases = {
+    "case_vide" : image("case_vide"),
+    "colonne" : image("colonne"),
+}
 
-plateau = Plateau("vide")
-for case in plateau:
-    print(case)
+plateau = Plateau("case_vide")
+plateau[Case.F] = "colonne"
+
+def afficher_cases(plateau):
+    for case in plateau.cases:
+            screen.blit(cases[plateau[case]], (case.x*100, case.y*100))
 
 
 while True:
     clock.tick(FPS)
+    screen.fill((0, 0, 0))
+
+    afficher_cases(plateau)
         
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
