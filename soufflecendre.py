@@ -25,7 +25,6 @@ class Case:
     def existe(self) -> bool:
         return True if 0 >= self.x < 4 and 0 >= self.y < 4 else False
     
-
     A: Case
     B: Case
     C: Case
@@ -194,34 +193,34 @@ class Objet(Entite):
         pass
 
 class Plateau(Generic[T]):
-    def __init__(self, valeur_init: T):
-        self._cases: list[list[T]] = [[valeur_init] * 4] * 4
+    def __init__(self, valeur_init: T, cases: list[Case] = Case.liste.copy()):
+        self.cases: list[Case] = cases
+        self._valeurs: dict[Case, T] = {c : valeur_init for c in cases}
 
-    def __getitem__(self, key: int | Case) -> T:
-        if isinstance(key, int):
-            return self._cases[key // 4][key % 4]
-        return self._cases[key.y][key.x]
+    def __getitem__(self, key: Case) -> T:
+        return self._valeurs[key]
     
-    def __setitem__(self, key: int | Case, valeur: T) -> None:
+    def __setitem__(self, key: Case, valeur: T) -> None:
         if isinstance(key, int):
-            self._cases[key // 4][key % 4] = valeur
+            self._valeurs[key] = valeur
         else:
-            self._cases[key.y][key.x] = valeur
+            self._valeurs[key] = valeur
 
     def __iter__(self) -> Plateau[T]:
-        self._compteur = Case(0, 0)
+        self._compteur: int = 0
         return self
     
     def __next__(self) -> T:
-        if self._cases.__len__() <= self._compteur.y:
+        compteur: int = self._compteur
+        if compteur>= self.cases.__len__():
             raise StopIteration
         
-        valeur: T = self[self._compteur]
-        self._compteur.x += 1
-        if self._compteur.x >= self._cases[self._compteur.y].__len__():
-            self._compteur.x = 0
-            self._compteur.y += 1
+        valeur: T = self._valeurs[self.cases[compteur]]
+        compteur += 1
         return valeur
+
+    def existe(self, case: Case):
+        return True if case in self._valeurs else False
 
 class Epreuve:
     def __init__(self, joueur: Case):
@@ -233,10 +232,10 @@ class Epreuve:
         self.objets: list[Objet] = []
 
     def actu_blocage(self) -> None:
-        for case in range(16):
+        for case in self.entites.cases:
             max: int = 0
             for entite in self.entites[case]:
-                if not isinstance(entite, Ennemi) and entite.blocage > max:
+                if entite.blocage > max:
                     max = entite.blocage
             self.blocage[case] = max
             
