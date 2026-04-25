@@ -21,6 +21,10 @@ class Case:
         if not isinstance(other, Case):
             return NotImplemented
         return self.x == other.x and self.y == other.y
+    
+    def existe(self) -> bool:
+        return True if 0 >= self.x < 4 and 0 >= self.y < 4 else False
+    
 
     A: Case
     B: Case
@@ -78,6 +82,7 @@ class Noeud:
         self.case: Case = case
         self.suivants: list[Noeud | None] = []
 
+    # Verifie parmi tous les noeuds parents si la case ou le noeud spécifié en fait partie
     def parent_existe(self, parent: Case | Noeud) -> bool:
         n: Noeud = self
         case: Case
@@ -139,37 +144,43 @@ class Ennemi(Entite):
         self.vitesse = 1
         self.portee = 1
     
+    # Crée l'arbre de déplacement quelconque d'un ennemi (toutes directions autorisées)
     def mouv_qcq(self, epreuve: Epreuve, noeud: Noeud, dist: int) -> Noeud:
         for dep in [Case.HAUT, Case.BAS, Case.GAUCHE, Case.DROITE]:
-            if not noeud.parent_existe(noeud.case + dep) and self.blocage < epreuve.blocage[self.position + dep]:
+            suivant: Case = noeud.case + dep
+            if suivant.existe() and not noeud.parent_existe(suivant) and self.blocage < epreuve.blocage[suivant]:
                 if dist > 1:
-                    noeud.suivants.append(self.mouv_qcq(epreuve, Noeud(noeud, noeud.case + dep), dist - 1))
+                    noeud.suivants.append(self.mouv_qcq(epreuve, Noeud(noeud, suivant), dist - 1))
                 else:
-                    noeud.suivants.append(Noeud(noeud, noeud.case + dep))
+                    noeud.suivants.append(Noeud(noeud, suivant))
         return noeud
     
     def mouv_ligne(self, epreuve: Epreuve, noeud: Noeud, dist: int) -> Noeud:
-        # Cas 1 : premier case de deplacement (initie le mouv)
+        # Cas 1 : première case de deplacement (initie le mouvement)
         if noeud.parent is None:
-           noeud.suivants.append(self.mouv_ligne(epreuve, Noeud(noeud, noeud.case + Case.HAUT), dist - 1))
-           noeud.suivants.append(self.mouv_ligne(epreuve, Noeud(noeud, noeud.case + Case.BAS), dist - 1))
-           noeud.suivants.append(self.mouv_ligne(epreuve, Noeud(noeud, noeud.case + Case.GAUCHE), dist - 1))
-           noeud.suivants.append(self.mouv_ligne(epreuve, Noeud(noeud, noeud.case + Case.DROITE), dist - 1))
-           return noeud
+            for dep in [Case.HAUT, Case.BAS, Case.GAUCHE, Case.DROITE]:
+                suivant: Case = noeud.case + dep
+                if suivant.existe() and not noeud.parent_existe(suivant) and self.blocage < epreuve.blocage[suivant]:
+                    noeud.suivants.append(self.mouv_ligne(epreuve, Noeud(noeud, suivant), dist - 1))
+            return noeud
         
-        # Cas 2 : le deplacement doit être le même que le précédent
-        dep: Case = noeud.parent.case - noeud.case
-        if self.blocage < epreuve.blocage[self.position + dep]:
+        # Cas 2 : le deplacement doit être le même sens que le précédent
+        dep: Case = noeud.case - noeud.parent.case
+        suivant: Case = noeud.case + dep
+        if suivant.existe() and not noeud.parent_existe(suivant) and self.blocage < epreuve.blocage[suivant]:
             if dist > 1:
-                noeud.suivants.append(self.mouv_ligne(epreuve, Noeud(noeud, noeud.case + dep), dist - 1))
+                noeud.suivants.append(self.mouv_ligne(epreuve, Noeud(noeud, suivant), dist - 1))
             else:
-                noeud.suivants.append(Noeud(noeud, noeud.case + dep))
+                noeud.suivants.append(Noeud(noeud, suivant))
         return noeud
 
     deplacement = mouv_qcq
 
-    def attaque(self) -> int:
-        return self.degats
+    def attaque(self, epreuve: Epreuve) -> int:
+        if (epreuve.distance_joueur[self.position] <= self.portee):
+            return self.degats
+        
+        return 0
 
 class Objet(Entite):
     def __init__(self, case: Case):
@@ -184,18 +195,33 @@ class Objet(Entite):
 
 class Plateau(Generic[T]):
     def __init__(self, valeur_init: T):
-        self._cases: list[T] = [valeur_init] * 16
+        self._cases: list[list[T]] = [[valeur_init] * 4] * 4
 
     def __getitem__(self, key: int | Case) -> T:
         if isinstance(key, int):
-            return self._cases[key]
-        return self._cases[key.x + 4 * key.y]
+            return self._cases[key // 4][key % 4]
+        return self._cases[key.y][key.x]
     
     def __setitem__(self, key: int | Case, valeur: T) -> None:
         if isinstance(key, int):
-            self._cases[key] = valeur
+            self._cases[key // 4][key % 4] = valeur
         else:
-            self._cases[key.x + 4 * key.y] = valeur
+            self._cases[key.y][key.x] = valeur
+
+    def __iter__(self) -> Plateau[T]:
+        self._compteur = Case(0, 0)
+        return self
+    
+    def __next__(self) -> T:
+        if self._cases.__len__() <= self._compteur.y:
+            raise StopIteration
+        
+        valeur: T = self[self._compteur]
+        self._compteur.x += 1
+        if self._compteur.x >= self._cases[self._compteur.y].__len__():
+            self._compteur.x = 0
+            self._compteur.y += 1
+        return valeur
 
 class Epreuve:
     def __init__(self, joueur: Case):
@@ -215,12 +241,18 @@ class Epreuve:
             self.blocage[case] = max
             
     def actu_distance_joueur(self) -> None:
+        dist_j: Plateau[int] = self.distance_joueur
+        dist_j.__init__(0)
+
         q: Queue[Case] = Queue()
         q.put(self.joueur.position)
         while not q.empty():
             c: Case = q.get()
-            if self.distance_joueur[c]:
-                pass
+            for dep in [Case.HAUT, Case.BAS, Case.GAUCHE, Case.DROITE]:
+                suivant: Case = c + dep
+                if suivant.existe() and (dist_j[suivant] == 0 or dist_j[suivant] > dist_j[c] + 1):
+                    dist_j[suivant] = dist_j[c] + 1
+                    q.put(suivant)
 
     def tour_joueur(self) -> None:
         pass
