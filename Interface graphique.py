@@ -1,4 +1,4 @@
-import pygame ; import main ; import os ; import time
+import pygame ; from soufflecendre import * ; import os
 
 os.chdir(os.path.dirname(os.path.abspath(__file__))) # Permet de définir ce fichier comme fichier de base pour les importations
 
@@ -7,6 +7,8 @@ ecran_largeur = 1000 ; ecran_hauteur = 600
 
 screen = pygame.display.set_mode((ecran_largeur, ecran_hauteur))
 clock = pygame.time.Clock() ; FPS = 60
+
+pygame.display.set_caption("Soufflecendre")
 
 while True:
     clock.tick(FPS)
