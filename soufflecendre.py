@@ -25,9 +25,6 @@ class Case:
     def __hash__(self):
         return hash((self.x, self.y))
     
-    def existe(self) -> bool:
-        return True if 0 >= self.x < 4 and 0 >= self.y < 4 else False
-    
     A: Case
     B: Case
     C: Case
@@ -150,7 +147,7 @@ class Ennemi(Entite):
     def mouv_qcq(self, epreuve: Epreuve, noeud: Noeud, dist: int) -> Noeud:
         for dep in [Case.HAUT, Case.BAS, Case.GAUCHE, Case.DROITE]:
             suivant: Case = noeud.case + dep
-            if suivant.existe() and not noeud.parent_existe(suivant) and self.blocage < epreuve.blocage[suivant]:
+            if  and not noeud.parent_existe(suivant) and self.blocage < epreuve.blocage[suivant]:
                 if dist > 1:
                     noeud.suivants.append(self.mouv_qcq(epreuve, Noeud(noeud, suivant), dist - 1))
                 else:
@@ -214,12 +211,11 @@ class Plateau(Generic[T]):
         return self
     
     def __next__(self) -> T:
-        compteur: int = self._compteur
-        if compteur>= self.cases.__len__():
+        if self._compteur >= self.cases.__len__():
             raise StopIteration
         
-        valeur: T = self._valeurs[self.cases[compteur]]
-        compteur += 1
+        valeur: T = self._valeurs[self.cases[self._compteur]]
+        self._compteur += 1
         return valeur
 
     def existe(self, case: Case):
