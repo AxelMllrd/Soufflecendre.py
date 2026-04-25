@@ -10,6 +10,12 @@ clock = pygame.time.Clock() ; FPS = 60
 
 pygame.display.set_caption("Soufflecendre")
 
+
+plateau = Plateau("vide")
+for case in plateau:
+    print(case)
+
+
 while True:
     clock.tick(FPS)
         
@@ -18,5 +24,3 @@ while True:
             exit()
 
     pygame.display.update()
-
-pygame.quit()
