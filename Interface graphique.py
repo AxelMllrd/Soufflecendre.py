@@ -8,7 +8,7 @@ ecran_largeur = 1000 ; ecran_hauteur = 600
 screen = pygame.display.set_mode((ecran_largeur, ecran_hauteur))
 clock = pygame.time.Clock() ; FPS = 60
 
-def image(nom):
+def image(nom: str):
     img = pygame.image.load("images//epreuves//plateau//" + nom + ".png").convert_alpha()
     return img
 
@@ -22,7 +22,7 @@ cases = {
 plateau = Plateau("case_vide")
 plateau[Case.F] = "colonne"
 
-def afficher_cases(plateau):
+def afficher_cases(plateau: Plateau[str]):
     for case in plateau.cases:
             screen.blit(cases[plateau[case]], (case.x*100, case.y*100))
 
