@@ -10,14 +10,22 @@ clock = pygame.time.Clock() ; FPS = 60
 
 pygame.display.set_caption("Soufflecendre")
 
+image_case_vide = pygame.image.load("images//epreuves//plateau//case_vide.png")
 
 plateau = Plateau("vide")
-for case in plateau:
-    print(case)
+plateau[Case.F] = "Colonne"
+
+def afficher_cases(plateau):
+    for case in plateau.cases:
+        if plateau[case] == "vide":
+            screen.blit(image_case_vide, (case.x*100, case.y*100))
 
 
 while True:
     clock.tick(FPS)
+    screen.fill((0, 0, 0))
+
+    afficher_cases(plateau)
         
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
