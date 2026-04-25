@@ -147,7 +147,7 @@ class Ennemi(Entite):
     def mouv_qcq(self, epreuve: Epreuve, noeud: Noeud, dist: int) -> Noeud:
         for dep in [Case.HAUT, Case.BAS, Case.GAUCHE, Case.DROITE]:
             suivant: Case = noeud.case + dep
-            if  and not noeud.parent_existe(suivant) and self.blocage < epreuve.blocage[suivant]:
+            if epreuve.entites.existe(suivant) and not noeud.parent_existe(suivant) and self.blocage < epreuve.blocage[suivant]:
                 if dist > 1:
                     noeud.suivants.append(self.mouv_qcq(epreuve, Noeud(noeud, suivant), dist - 1))
                 else:
@@ -159,14 +159,14 @@ class Ennemi(Entite):
         if noeud.parent is None:
             for dep in [Case.HAUT, Case.BAS, Case.GAUCHE, Case.DROITE]:
                 suivant: Case = noeud.case + dep
-                if suivant.existe() and not noeud.parent_existe(suivant) and self.blocage < epreuve.blocage[suivant]:
+                if epreuve.entites.existe(suivant) and not noeud.parent_existe(suivant) and self.blocage < epreuve.blocage[suivant]:
                     noeud.suivants.append(self.mouv_ligne(epreuve, Noeud(noeud, suivant), dist - 1))
             return noeud
         
         # Cas 2 : le deplacement doit être le même sens que le précédent
         dep: Case = noeud.case - noeud.parent.case
         suivant: Case = noeud.case + dep
-        if suivant.existe() and not noeud.parent_existe(suivant) and self.blocage < epreuve.blocage[suivant]:
+        if epreuve.entites.existe(suivant) and not noeud.parent_existe(suivant) and self.blocage < epreuve.blocage[suivant]:
             if dist > 1:
                 noeud.suivants.append(self.mouv_ligne(epreuve, Noeud(noeud, suivant), dist - 1))
             else:
@@ -248,7 +248,7 @@ class Epreuve:
             c: Case = q.get()
             for dep in [Case.HAUT, Case.BAS, Case.GAUCHE, Case.DROITE]:
                 suivant: Case = c + dep
-                if suivant.existe() and (dist_j[suivant] == 0 or dist_j[suivant] > dist_j[c] + 1):
+                if self.entites.existe(suivant) and (dist_j[suivant] == 0 or dist_j[suivant] > dist_j[c] + 1):
                     dist_j[suivant] = dist_j[c] + 1
                     q.put(suivant)
 
