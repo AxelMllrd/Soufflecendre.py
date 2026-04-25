@@ -1,6 +1,10 @@
 from soufflecendre import *
 
-plateau: Plateau[int] = Plateau(0)
+epreuve: Epreuve = Epreuve(Case.B)
+epreuve.distance_joueur._valeurs.pop(Case.F)
+epreuve.actu_distance_joueur()
+
+plateau: Plateau[int] = epreuve.distance_joueur
 # print plateau
 x_min: int = 0
 x_max: int = 0
@@ -15,6 +19,7 @@ for c in plateau.cases:
         y_max = c.y
     if c.y < y_min:
         y_min = c.y
+
 
 for y in range(y_min, y_max + 1):
     for x in range(x_min, x_max + 1):

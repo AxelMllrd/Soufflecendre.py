@@ -24,7 +24,7 @@ plateau[Case.F] = "colonne"
 
 def afficher_cases(plateau: Plateau[str]):
     for case in plateau.cases:
-            screen.blit(cases[plateau[case]], (case.x*100 + ecran_largeur//2-200, case.y*100))
+            screen.blit(cases[plateau[case]], (case.x*100 + ecran_largeur//2-200, case.y*100 + ecran_hauteur//2-200))
 
 
 while True:
