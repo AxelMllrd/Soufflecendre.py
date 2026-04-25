@@ -38,7 +38,6 @@ class Case:
     N: Case
     O: Case
     P: Case
-    HORS_PLATEAU: Case
 
     liste: list[Case]
 
@@ -63,7 +62,6 @@ Case.M = Case(0, 3)
 Case.N = Case(1, 3)
 Case.O = Case(2, 3)
 Case.P = Case(3, 3)
-Case.HORS_PLATEAU = Case(10000000, 1000000)
 
 Case.liste = [Case.A, Case.B, Case.C, Case.D, Case.E, Case.F, Case.G, Case.H, Case.I, Case.J, Case.K, Case.L, Case.M, Case.N, Case.O, Case.P]
 
