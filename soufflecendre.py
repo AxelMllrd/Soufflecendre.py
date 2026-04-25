@@ -21,6 +21,9 @@ class Case:
         if not isinstance(other, Case):
             return NotImplemented
         return self.x == other.x and self.y == other.y
+
+    def __hash__(self):
+        return hash((self.x, self.y))
     
     def existe(self) -> bool:
         return True if 0 >= self.x < 4 and 0 >= self.y < 4 else False
