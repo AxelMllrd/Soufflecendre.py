@@ -110,7 +110,7 @@ class Entite:
 
 class Carte:
     INUTILISEE = 0
-    UTILISEE = 1
+    DEFAUSSEE = 1
     ECLATEE = 2
 
     def __init__(self):
