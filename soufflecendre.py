@@ -108,9 +108,9 @@ class Entite:
 # ---------------------------------------------------- #
 
 class Carte:
-    INUTILISEE = 0
-    DEFAUSSEE = 1
-    ECLATEE = 2
+    INUTILISEE = 4
+    DEFAUSSEE = 0
+    ECLATEE = 0
 
     def __init__(self):
         self.nom: str
