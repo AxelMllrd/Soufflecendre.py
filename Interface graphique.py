@@ -20,6 +20,7 @@ pygame.display.set_icon(icone) # Change la petite icone en haut à gauche, c'est
 cases = {
     "case_vide" : image("case_vide"),
     "colonne" : image("colonne"),
+    "joueur" : image("joueur"),
 }
 
 cartes = {
@@ -31,7 +32,7 @@ cartes = {
 plateau = Plateau("case_vide") # Création d'un vieux plateau random
 plateau[Case.F] = "colonne"
 
-joueur = Joueur(plateau[Case.M]) # Joueur qui va démarrer case M allez
+joueur = Joueur(Case.M) # Joueur qui va démarrer case M allez
 
 
 def afficher_cases(plateau: Plateau[str]):
@@ -48,9 +49,7 @@ def afficher_cartes(joueur):
                 x += 200
 
 def afficher_joueur(joueur):
-    pass
-
-print(joueur.position)
+    screen.blit(cases["joueur"], (joueur.position.x*100 + ecran_largeur//2-200, joueur.position.y*100 +100))
 
 class Souris():
     def __init__(self):
@@ -73,6 +72,7 @@ while True:
 
     afficher_cases(plateau)
     afficher_cartes(joueur)
+    afficher_joueur(joueur)
         
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
