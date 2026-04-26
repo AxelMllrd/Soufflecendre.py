@@ -240,7 +240,8 @@ class Epreuve:
             
     def actu_distance_joueur(self) -> None:
         dist_j: Plateau[int] = self.distance_joueur
-        dist_j.__init__(0)
+        dist_j.__init__(-1)
+        dist_j[self.joueur.position] = 0
 
         q: Queue[Case] = Queue()
         q.put(self.joueur.position)
@@ -248,7 +249,7 @@ class Epreuve:
             c: Case = q.get()
             for dep in [Case.HAUT, Case.BAS, Case.GAUCHE, Case.DROITE]:
                 suivant: Case = c + dep
-                if self.entites.existe(suivant) and (dist_j[suivant] == 0 or dist_j[suivant] > dist_j[c] + 1):
+                if self.entites.existe(suivant) and (dist_j[suivant] == -1 or dist_j[suivant] > dist_j[c] + 1):
                     dist_j[suivant] = dist_j[c] + 1
                     q.put(suivant)
 
