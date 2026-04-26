@@ -73,7 +73,7 @@ Case.BAS = Case(0, 1)
 Case.GAUCHE = Case(-1, 0)
 Case.DROITE = Case(1, 0)
 
-# ---------------------------------------------------- #
+# ----------------------NOEUD------------------------------ #
 
 class Noeud:
     def __init__(self, parent: Noeud | None, case: Case):
@@ -96,7 +96,7 @@ class Noeud:
             n = n.parent
         return False
 
-# ---------------------------------------------------- #
+# ----------------------ENTITES------------------------------ #
 
 class Entite:
     def __init__(self, case: Case):
@@ -105,10 +105,10 @@ class Entite:
         self.position: Case = case
         self.blocage: int = 0
 
-# ---------------------------------------------------- #
+# ----------------------JOUEUR------------------------------ #
 
 class Carte:
-    INUTILISEE = 4
+    INUTILISEE = 0 # Quel est l'intérêt de ces trois trucs ?? Chaque carte n'a t elle simplement pas un des trois états ?
     DEFAUSSEE = 0
     ECLATEE = 0
 
@@ -119,12 +119,12 @@ class Carte:
 class Cultiste(Carte):
     def __init__(self):
         super().__init__()
-        self.nom = "Cultiste"
+        self.nom = "cultiste" # Nom sans majuscule
 
 class Corruption(Carte):
     def __init__(self):
         super().__init__()
-        self.nom = "Corruption"
+        self.nom = "corruption" # Nom sans majuscule
 
 class Joueur(Entite):
     def __init__(self, case: Case):
@@ -132,7 +132,7 @@ class Joueur(Entite):
         self.nom = "Joueur"
         self.cartes: list[list[Carte]] = [[Corruption() for _ in range(4)], [Cultiste() for _ in range(4)]]
 
-# ---------------------------------------------------- # 
+# ----------------------ENNEMIS------------------------------ # 
 
 class Ennemi(Entite):
     def __init__(self, case: Case):
